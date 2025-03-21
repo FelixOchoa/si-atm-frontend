@@ -128,8 +128,21 @@ function CuentaAhorrosComponent({ goBack }) {
     setAhorroManoState(AHORRO_MANO_TAKE_MONEY);
   }
 
+  const handleGoBack = () => {
+    setAhorroManoState(AHORRO_MANO_AUTH);
+    setPhoneNumber('');
+    setPassword('');
+    setSelectedAmount(null);
+    setCustomAmount('');
+    setIsValidAmount(false);
+    setErrorMessage('');
+    setResponseTakeMoney('');
+    goBack();
+  }
+
   return (
     <main className="flex flex-col items-center justify-center h-screen bg-[#e5f3ff] px-5">
+      <span className="text-sm font-bold text-center text-white bg-[#100010] py-2 px-4 absolute rounded-md top-4 left-2 cursor-pointer" onClick={handleGoBack}>Volver</span>
       
       {ahorroManoState === AHORRO_MANO_AUTH && (
         <div className="flex flex-col items-center justify-center w-full max-w-md bg-white p-4 rounded-md">

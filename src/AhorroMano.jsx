@@ -26,7 +26,6 @@ function AhorroManoComponent({ goBack }) {
   const [isValidAmount, setIsValidAmount] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [responseTakeMoney, setResponseTakeMoney] = useState('');
-  const [numberIsCorrect, setNumberIsCorrect] = useState(false);
 
   useEffect(() => {
     if (selectedAmount) {
@@ -39,14 +38,15 @@ function AhorroManoComponent({ goBack }) {
     }
   }, [selectedAmount, customAmount]);
 
-  useEffect(() => {
-    validatePhone(phoneNumber);
-  }, [phoneNumber]);
-
   const isValueNumber = (value, typeInput) => {
     setErrorMessage('');
     if (typeInput === IS_PHONE_NUMBER) {
-      if (/^\d{0,11}$/.test(value)) {
+      if (value.length > 1 && value[1] !== '3') {
+        return;
+      }
+      if (/^[01]\d{0,10}$/.test(value)) {
+        setPhoneNumber(value);
+      } else if (value === '') {
         setPhoneNumber(value);
       }
     } else if (typeInput === IS_DYNAMIC_KEY) {
@@ -60,33 +60,6 @@ function AhorroManoComponent({ goBack }) {
       }
     }
   };
-
-  const validatePhone = (phone) => {
-    setErrorMessage('');
-    
-    if (!phone) {
-      setNumberIsCorrect(false);
-        setErrorMessage('El número de celular es obligatorio');
-        return;
-    }
-    
-    if (phone[0] !== '0' && phone[0] !== '1') {
-      setNumberIsCorrect(false);
-    setErrorMessage('El número de celular debe iniciar con 0 o 1');
-      return;
-    }
-    
-    // Validar segundo dígito (debe ser 3)
-    if (phone[1] !== '3') {
-      setNumberIsCorrect(false);
-      setErrorMessage('El segundo dígito debe ser 3');
-      return;
-    }
-
-    setNumberIsCorrect(true);
-    setErrorMessage('');
-}
-
 
   const validateAmount = async (amount) => {
     if (!amount) {
@@ -158,17 +131,25 @@ function AhorroManoComponent({ goBack }) {
       setErrorMessage('Debes ingresar el número de celular y la clave');
       return;
     }
-
-    if (!numberIsCorrect) {
-        setErrorMessage('El número de celular es incorrecto');
-        return;
-    }
     
     setAhorroManoState(AHORRO_MANO_TAKE_MONEY);
   }
 
+  const handleGoBack = () => {
+    setAhorroManoState(AHORRO_MANO_AUTH);
+    setPhoneNumber('');
+    setPassword('');
+    setSelectedAmount(null);
+    setCustomAmount('');
+    setIsValidAmount(false);
+    setErrorMessage('');
+    setResponseTakeMoney('');
+    goBack();
+  }
+
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-[#FFFBE5]">
+    <main className="flex flex-col items-center justify-center h-screen bg-[#FFFBE5] px-5">
+      <span className="text-sm font-bold text-center text-white bg-[#100010] py-2 px-4 absolute rounded-md top-4 left-2 cursor-pointer" onClick={handleGoBack}>Volver</span>
       
       {ahorroManoState === AHORRO_MANO_AUTH && (
         <div className="flex flex-col items-center justify-center w-full max-w-md bg-white p-4 rounded-md">

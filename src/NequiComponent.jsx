@@ -41,7 +41,9 @@ function NequiComponent({ requestDynamicKey, goBack }) {
   const isValueNumber = (value, typeInput) => {
     setErrorMessage('');
     if (typeInput === IS_PHONE_NUMBER) {
-      if (/^\d{0,10}$/.test(value)) {
+      if (/^3\d{0,9}$/.test(value)) {
+        setPhoneNumber(value);
+      } else if (value === '') {
         setPhoneNumber(value);
       }
     } else if (typeInput === IS_DYNAMIC_KEY) {
@@ -77,13 +79,11 @@ function NequiComponent({ requestDynamicKey, goBack }) {
     }
   };
 
-  // Seleccionar un monto predefinido
   const handleSelectAmount = (amount) => {
     setSelectedAmount(amount);
     setCustomAmount('');
   };
 
-  // Procesar el retiro
   const handleWithdrawal = async () => {
     const amountToWithdraw = selectedAmount || parseInt(customAmount);
     
@@ -134,11 +134,23 @@ function NequiComponent({ requestDynamicKey, goBack }) {
 
     setNequiState(NEQUI_TAKE_MONEY);
   }
+  const handleGoBack = () => {
+    setNequiState(NEQUI_AUTH);
+    setPhoneNumber('');
+    setDynamicKey('');
+    setSelectedAmount(null);
+    setCustomAmount('');
+    setIsValidAmount(false);
+    setErrorMessage('');
+    setResponseTakeMoney('');
+    goBack();
+  }
 
   return (
     <main className="flex flex-col items-center justify-center h-screen bg-[#FBE5F2] px-5">
       <span className="text-sm font-bold text-center text-white bg-[#100010] py-2 px-4 absolute rounded-md top-4 right-2">Clave dinámica: {requestDynamicKey}</span>
-      
+      <span className="text-sm font-bold text-center text-white bg-[#100010] py-2 px-4 absolute rounded-md top-4 left-2 cursor-pointer" onClick={handleGoBack}>Volver</span>
+
       {nequiState === NEQUI_AUTH && (
         <div className="flex flex-col items-center justify-center w-full max-w-md bg-white p-4 rounded-md">
           <h1 className="font-bold text-2xl text-center">Entra a tu Nequi</h1>
